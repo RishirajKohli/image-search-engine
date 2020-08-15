@@ -1,0 +1,22 @@
+.main-block {
+  margin: 2rem 0;
+  .search-box {
+    width: 40%;
+    margin: auto;
+    text-align: center;
+    padding: 8px;
+    button {
+      margin: 0 8px;
+    }
+    input {
+      border-radius: 6px;
+      height: 30px;
+      &:focus {
+        outline: none;
+      }
+    }
+  }
+  .placeholder {
+    text-align: center;
+  }
+}

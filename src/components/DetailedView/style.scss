@@ -1,0 +1,63 @@
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(168, 145, 145, 0.383);
+  .modal-overlay {
+    position: absolute;
+    top: 10%;
+    left: 15%;
+    margin: auto;
+    border-radius: 4px;
+    width: 70%;
+    height: 550px;
+    background: white;
+    .user {
+      margin: 2rem;
+      .user-avatar {
+        display: inline-block;
+        border-radius: 50%;
+        margin-right: 8px;
+        overflow: hidden;
+      }
+      .user-info {
+        display: inline-block;
+      }
+    }
+
+    .image-block {
+      // width: 100%;
+      height: 70%;
+      overflow: hidden;
+      margin: 2rem;
+      img {
+        display: block;
+        margin: auto;
+        max-width: 100%;
+      }
+    }
+    .close {
+      position: absolute;
+      top: -12px;
+      right: -5px;
+
+      button {
+        border-radius: 50%;
+        font-size: 20px;
+      }
+    }
+    .download-block {
+      text-align: center;
+      a {
+        text-decoration: none;
+        cursor: pointer;
+        color: white;
+        background: green;
+        padding: 8px;
+        border-radius: 4px;
+      }
+    }
+  }
+}
