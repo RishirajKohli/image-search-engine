@@ -109,9 +109,9 @@ function ImageSearchPage() {
           onChange={handleInputChange}
           placeholder="Search for images here..."
         ></input>
-        <span>
+        <button type="submit">
           <Icon icon={cardSearch} className="search-button"></Icon>
-        </span>
+        </button>
       </form>
       {areImagesLoading ? (
         <div className="placeholder"> Loading....</div>
