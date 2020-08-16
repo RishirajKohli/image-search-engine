@@ -20,7 +20,8 @@ function DetailedView() {
       unsplash.photos
         .getPhoto(photoId)
         .then((res) => {
-          return res.json();
+          if (res.status == 200) return res.json();
+          throw new Error();
         })
         .then((res) => {
           setImage(res);
@@ -28,14 +29,17 @@ function DetailedView() {
         })
         .catch((err) => {
           console.error(err);
-          setIsImageLoading(false);
           setError("An error. Try Again!");
+          setIsImageLoading(false);
         });
     }
   }, [isImageLoading, photoId]);
   const handleCLose = useCallback(() => {
     window.history.back();
   }, []);
+  const handleDownload = useCallback(() => {
+    unsplash.photos.downloadPhoto(image);
+  }, [image]);
   return (
     <>
       <div className="backdrop">
@@ -55,16 +59,18 @@ function DetailedView() {
                 <div className="user-avatar">
                   <img
                     alt={image.user.username}
-                    src={image.user.profile_image.small}
+                    src={image.user.profile_image.medium}
                   ></img>
                 </div>
                 <div className="user-info">
                   <div>
-                    <i>
-                      <b>{`${image.user.first_name} ${image.user.last_name}`}</b>
-                    </i>
+                    <b>{`${image.user.first_name} ${image.user.last_name}`}</b>
                   </div>
-                  <div>{`@${image.user.twitter_username}`}</div>
+                  <div className="user-info__username">{`@${
+                    image.user.twitter_username ||
+                    image.user.instagram_username ||
+                    image.user.username
+                  }`}</div>
                 </div>
               </div>
               <div className="image-block">
@@ -74,6 +80,7 @@ function DetailedView() {
                 <a href={image.urls.regular} download>
                   Download
                 </a>
+                {/* <button onClick={handleDownload}> Download</button> */}
               </div>
             </>
           )}

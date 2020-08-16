@@ -9,7 +9,7 @@ function ImagesPanel({ images }) {
         return (
           <Link to={`/${image.id}`}>
             <div class="image-block">
-              <img alt={image.alt_description} src={image.urls.small}></img>
+              <img alt={image.alt_description} src={image.urls.thumb}></img>
             </div>
           </Link>
         );

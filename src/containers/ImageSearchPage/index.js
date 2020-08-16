@@ -1,8 +1,11 @@
 import React, { memo, useState, useCallback, useEffect } from "react";
 import Unsplash from "unsplash-js";
 import { Route } from "react-router-dom";
+// npm install --save-dev @iconify/react @iconify/icons-mdi
+import { Icon, InlineIcon } from "@iconify/react";
+import cardSearch from "@iconify/icons-mdi/card-search";
+
 import ImagesPanel from "../../components/ImagesPanel";
-import Pagination from "../../components/Pagination";
 import DetailedView from "../../components/DetailedView";
 import "./style.scss";
 
@@ -12,29 +15,69 @@ export const unsplash = new Unsplash({
 
 function ImageSearchPage() {
   const [searchString, setSearchString] = useState("");
-  const [areImagesLoading, setAreImagesLoading] = useState(false);
-  const [images, setImages] = useState(null);
+  const [areImagesLoading, setAreImagesLoading] = useState(true);
+  const [areMoreIMagesLoading, setAreMoreImagesLoading] = useState(false);
+  const [showingRandom, setShowingRandom] = useState(true);
+  const [images, setImages] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(null);
+
   useEffect(() => {
-    if (areImagesLoading) {
-      unsplash.search
-        .photos(searchString, currentPage, 9, { orientation: "portrait" })
-        .then((response) => response.json())
-        .then((res) => {
-          setAreImagesLoading(false);
+    getRandomPhotos();
+  }, []);
 
-          setImages(res.results);
-          setTotalPages(res.total_pages);
-        })
-        .catch((err) => {
-          console.error(err);
-          setAreImagesLoading(false);
-          setImages([]);
-        });
+  useEffect(() => {
+    if (showingRandom && areMoreIMagesLoading) {
+      getRandomPhotos();
+    } else if (areMoreIMagesLoading) {
+      getSearchedPhotos(searchString);
+    } else if (!showingRandom && areImagesLoading) {
+      getSearchedPhotos(searchString);
     }
-  }, [areImagesLoading, searchString, currentPage]);
+  }, [showingRandom, areImagesLoading, areMoreIMagesLoading]);
+  const getRandomPhotos = () => {
+    unsplash.photos
+      .getRandomPhoto({ count: 9 })
+      .then((res) => {
+        if (res.status === 200) return res.json();
+        else throw new Error();
+      })
 
+      .then((res) => {
+        setImages([...images, ...res]);
+        setAreImagesLoading(false);
+        setAreMoreImagesLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        setImages([]);
+        setAreMoreImagesLoading(false);
+
+        setAreImagesLoading(false);
+      });
+  };
+  const getSearchedPhotos = (searchString) => {
+    unsplash.search
+      .photos(searchString, currentPage, 9, { orientation: "landscape" })
+      .then((response) => {
+        if (response.status === 200) return response.json();
+        else throw new Error();
+      })
+      .then((res) => {
+        setImages([...images, ...res.results]);
+        setTotalPages(res.total_pages);
+        setAreMoreImagesLoading(false);
+
+        setAreImagesLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        setImages([]);
+        setAreMoreImagesLoading(false);
+
+        setAreImagesLoading(false);
+      });
+  };
   const handleInputChange = useCallback((event) => {
     setSearchString(event.target.value);
   }, []);
@@ -42,39 +85,51 @@ function ImageSearchPage() {
     (event) => {
       event.preventDefault();
       if (searchString) {
+        setShowingRandom(false);
+        setImages([]);
         setAreImagesLoading(true);
       }
     },
     [searchString]
   );
-  const changePage = useCallback((pageNumber) => {
-    setCurrentPage(pageNumber);
-    setAreImagesLoading(true);
-  }, []);
+  const loadMore = useCallback(
+    (pageNumber) => {
+      setAreMoreImagesLoading(true);
+
+      if (!showingRandom) setCurrentPage(pageNumber);
+    },
+    [showingRandom]
+  );
 
   return (
     <main className="main-block">
       <form onSubmit={handleSearch} className="search-box">
-        <input value={searchString} onChange={handleInputChange}></input>
-        <button type="submit">Search</button>
+        <input
+          value={searchString}
+          onChange={handleInputChange}
+          placeholder="Search for images here..."
+        ></input>
+        <span>
+          <Icon icon={cardSearch} className="search-button"></Icon>
+        </span>
       </form>
       {areImagesLoading ? (
         <div className="placeholder"> Loading....</div>
-      ) : images === null ? (
-        <div className="placeholder">
-          <h3>Search for your favourite photos!!</h3>
-        </div>
       ) : images.length > 1 ? (
         <>
           <ImagesPanel images={images}></ImagesPanel>
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            changePage={changePage}
-          ></Pagination>
+          <div class="load-more-block">
+            {areMoreIMagesLoading ? (
+              "Loading More Images..."
+            ) : !showingRandom && currentPage == totalPages ? null : (
+              <button onClick={() => loadMore(currentPage + 1)}>
+                Load More
+              </button>
+            )}
+          </div>
         </>
       ) : (
-        "No Images found"
+        <div className="placeholder">Oops! No Images Found.</div>
       )}
       <Route
         path="/:photoId"

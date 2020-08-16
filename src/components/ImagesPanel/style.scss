@@ -1,19 +1,32 @@
 .image-panel {
   margin: auto;
-  width: 90%;
+  width: 65%;
 
   .image-block {
     display: inline-block;
     width: 30%;
-    height: 400px;
-    // border: solid 2px rgb(116, 73, 73);
-    border-radius: 4px;
-    vertical-align: top;
-    margin: 1rem;
-    cursor: pointer;
+    height: 180px;
+    // // border: solid 2px rgb(116, 73, 73);
+    border-radius: 8px;
+    // vertical-align: top;
+    // margin: 1rem;
+    // cursor: pointer;
+    // overflow: hidden;
+    // width: 200px;
+    // height: 200px;
     overflow: hidden;
+    margin: 10px;
+    position: relative;
     img {
-      object-fit: contain;
+      position: absolute;
+      margin: auto;
+      min-height: 100%;
+      min-width: 100%;
+
+      left: -100%;
+      right: -100%;
+      top: -100%;
+      bottom: -100%;
     }
     &:hover {
       box-shadow: 2px 2px 2px 4px rgb(167, 160, 160);
